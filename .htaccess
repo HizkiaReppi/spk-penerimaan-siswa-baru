@@ -1,0 +1,46 @@
+RewriteEngine On
+
+# Clean extension .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Clean extension .html
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Url Rewrite for participants url
+RewriteRule ^admin/participants/([A-Za-z0-9-_]+)$ admin/participants/detail/index.php?no_pendaftaran=$1 [L]
+RewriteRule ^admin/participants/([A-Za-z0-9-_]+)/edit$ admin/participants/edit/?no_pendaftaran=$1 [L]
+RewriteRule ^admin/participants/([A-Za-z0-9-_]+)/update$ admin/participants/edit/update.php [L]
+RewriteRule ^admin/participants/([A-Za-z0-9-_]+)/destroy$ admin/participants/destroy/?no_pendaftaran=$1 [L]
+
+# Url Rewrite for users url
+RewriteRule ^admin/users/([A-Za-z]+)/edit$ admin/users/edit/?username=$1 [L]
+RewriteRule ^admin/users/([A-Za-z]+)/destroy$ admin/users/destroy/?username=$1 [L]
+
+# Url Rewrite for majors url
+RewriteRule ^admin/majors/([A-Za-z-_]+)/edit$ admin/majors/edit/?slug=$1 [L]
+RewriteRule ^admin/majors/([A-Za-z-_]+)/destroy$ admin/majors/destroy/?slug=$1 [L]
+
+# Url Rewrite for criteria url
+RewriteRule ^admin/criteria/([0-9]+)/edit$ admin/criteria/edit/?id=$1 [L]
+RewriteRule ^admin/criteria/([0-9]+)/destroy$ admin/criteria/destroy/?id=$1 [L]
+
+# Url Rewrite for values url
+RewriteRule ^admin/values/([A-Za-z0-9-_]+)/edit$ admin/values/edit/index.php?no_pendaftaran=$1 [L]
+RewriteRule ^admin/values/([A-Za-z0-9-_]+)/update$ admin/values/edit/update.php?no_pendaftaran=$1 [L]
+
+# Url Rewrite for normalization url
+RewriteRule ^admin/normalization/([A-Za-z0-9-_]+)$ admin/normalization/detail/index.php?id_jurusan=$1 [L]
+
+# Url Rewrite for report url
+RewriteRule ^admin/reports/accepts/([A-Za-z0-9-_]+)$ admin/reports/accepts/index.php?id_jurusan=$1 [L]
+RewriteRule ^admin/reports/accepts/([A-Za-z0-9-_]+)/print$ admin/reports/accepts/print/index.php?id_jurusan=$1 [L]
+
+RewriteRule ^admin/reports/registered/([A-Za-z0-9-_]+)$ admin/reports/registered/index.php?id_jurusan=$1 [L]
+RewriteRule ^admin/reports/registered/([A-Za-z0-9-_]+)/print$ admin/reports/registered/print/index.php?id_jurusan=$1 [L]
+
+# Url Rewrite for result detail url
+RewriteRule ^results/([A-Za-z0-9-_]+)$ results/detail/index.php?slug=$1 [L]

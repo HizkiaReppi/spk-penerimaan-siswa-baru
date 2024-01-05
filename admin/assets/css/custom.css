@@ -1,0 +1,29 @@
+
+/*
+.profil {
+	width: 250px;
+  	height: 250px;
+  	overflow: hidden;
+  	position: relative;
+}
+
+.profil img{
+	max-height: 210px;
+	position: absolute;
+}
+
+/* Desktop 
+@media (min-width: 992px) {
+
+.profil {
+	width: 175px;
+  	height: 175px;
+  	overflow: hidden;
+  	position: relative;
+}
+
+.profil img{
+	max-height: 175px;
+}
+
+}
