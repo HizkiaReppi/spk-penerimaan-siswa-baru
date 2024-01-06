@@ -1,6 +1,9 @@
 <?php
 
 include "../../lib/koneksi.php";
+
+$title = 'Manajemen User';
+
 include "../templates/header.php";
 
 $session_admin = $_SESSION['admin'];

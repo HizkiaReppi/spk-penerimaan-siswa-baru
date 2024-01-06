@@ -22,6 +22,8 @@ if (isset($_SESSION['old_input']) && !empty($_SESSION['old_input'])) {
   unset($_SESSION['old_input']);
 }
 
+$title = isset($title) ? $title : 'Dashboard';
+
 ?>
 
 <!DOCTYPE html>
@@ -32,9 +34,8 @@ if (isset($_SESSION['old_input']) && !empty($_SESSION['old_input'])) {
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <title>Management</title>
+  <title>Sistem Pendukung Keputusan | <?= $title; ?></title>
   <!-- Icons-->
-
   <link href="<?= BASE_URL_ADMIN; ?>/assets/vendors/@coreui/icons/css/coreui-icons.min.css" rel="stylesheet">
   <link href="<?= BASE_URL_ADMIN; ?>/assets/vendors/flag-icon-css/css/flag-icon.min.css" rel="stylesheet">
   <link href="<?= BASE_URL_ADMIN; ?>/assets/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">

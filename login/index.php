@@ -25,13 +25,17 @@ include_once '../templates/header.php';
 									</div>
 									<input class="form-control" type="email" placeholder="Email" name="email">
 								</div>
-								<div class="input-group mb-4">
+								<div class="input-group mb-2">
 									<div class="input-group-prepend">
 										<span class="input-group-text">
 											<i class="icon-lock"></i>
 										</span>
 									</div>
 									<input class="form-control" type="password" placeholder="Password" name="password">
+								</div>
+								<div class="input-group mb-4 ml-4">
+									<input type="checkbox" class="form-check-input" name="see-password" id="see-password">
+									<label for="see-password" class="form-check-label">Lihat Password</label>
 								</div>
 								<div class="row">
 									<div class="col-6">
@@ -50,4 +54,16 @@ include_once '../templates/header.php';
 	</div>
 </div>
 
+<script>
+	const seePassword = document.querySelector('#see-password');
+
+	seePassword.addEventListener('click', function() {
+		const password = document.querySelector('input[name="password"]');
+		if (password.type === 'password') {
+			password.type = 'text';
+		} else {
+			password.type = 'password';
+		}
+	});
+</script>
 <?php include_once '../templates/footer.php'; ?>

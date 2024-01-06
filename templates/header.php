@@ -39,7 +39,7 @@ $title = isset($title) ? $title : 'Sistem Pendukung Keputusan';
   <link rel="stylesheet" href="<?= BASE_URL_ADMIN; ?>/assets/vendors/simple-line-icons/css/simple-line-icons.css">
   <link rel="stylesheet" href="<?= BASE_URL_ADMIN; ?>/assets/css/style.css">
   <link rel="stylesheet" href="<?= BASE_URL_ADMIN; ?>/assets/vendors/pace-progress/css/pace.min.css">
-  <link rel="stylesheet" type="text/css" href="<?= BASE_URL; ?>/assets/styles/bootstrap4/bootstrap.min.css">
+  <link href="<?= BASE_URL_ADMIN; ?>/assets/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="<?= BASE_URL; ?>/assets/plugins/font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="<?= BASE_URL; ?>/assets/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
   <link rel="stylesheet" type="text/css" href="<?= BASE_URL; ?>/assets/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">

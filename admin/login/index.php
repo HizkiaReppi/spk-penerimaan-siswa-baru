@@ -68,13 +68,17 @@ if (isset($_SESSION['flash_message'])) {
                   </div>
                   <input class="form-control" type="text" placeholder="Username" name="username" required>
                 </div>
-                <div class="input-group mb-4">
+                <div class="input-group mb-2">
                   <div class="input-group-prepend">
                     <span class="input-group-text">
                       <i class="icon-lock"></i>
                     </span>
                   </div>
-                  <input class="form-control" type="password" placeholder="password" name="password" required>
+                  <input class="form-control" type="password" placeholder="Password" name="password" required>
+                </div>
+                <div class="input-group mb-4 ml-4">
+                  <input type="checkbox" class="form-check-input" name="see-password" id="see-password">
+                  <label for="see-password" class="form-check-label">Lihat Password</label>
                 </div>
                 <div class="row">
                   <div class="col-6">
@@ -96,6 +100,19 @@ if (isset($_SESSION['flash_message'])) {
   <script src="<?= BASE_URL_ADMIN; ?>/assets/vendors/pace-progress/js/pace.min.js"></script>
   <script src="<?= BASE_URL_ADMIN; ?>/assets/vendors/perfect-scrollbar/js/perfect-scrollbar.min.js"></script>
   <script src="<?= BASE_URL_ADMIN; ?>/assets/vendors/@coreui/coreui/js/coreui.min.js"></script>
+
+  <script>
+    const seePassword = document.querySelector('#see-password');
+
+    seePassword.addEventListener('click', function() {
+      const password = document.querySelector('input[name="password"]');
+      if (password.type === 'password') {
+        password.type = 'text';
+      } else {
+        password.type = 'password';
+      }
+    });
+  </script>
 </body>
 
 </html>

@@ -4,8 +4,8 @@ session_start();
 include "../lib/koneksi.php";
 include "../lib/functions.php";
 
-$email = htmlspecialchars($_POST['email']);
-$inputPassword = htmlspecialchars($_POST['password']);
+$email = htmlspecialchars(trim($_POST['email']));
+$inputPassword = htmlspecialchars(trim($_POST['password']));
 
 // Gunakan prepared statements untuk mencegah SQL injection
 $stmt = $mysqli->prepare("SELECT no_pendaftaran, name, nisn, password FROM peserta WHERE email = ?");
