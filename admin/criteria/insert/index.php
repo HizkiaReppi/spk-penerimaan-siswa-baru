@@ -1,8 +1,11 @@
 <?php
 
-include "../../../lib/koneksi.php";
-include "../../../lib/functions.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
+include_once "../../../lib/functions.php";
+
+$title = 'Tambah Data Kriteria';
+
+include_once "../../templates/header.php";
 
 // Hitung sisa bobot yang tersedia
 $total_bobot = 1;
@@ -13,11 +16,16 @@ $row = mysqli_fetch_assoc($result);
 $total_bobot -= (float)$row['total_bobot'];
 mysqli_stmt_close($stmt);
 
+if ($total_bobot == 0) {
+  $_SESSION['flash_message'] = 'Total Bobot Telah Penuh';
+  echo "<script>window.location.href='" . BASE_URL_ADMIN . "/criteria'</script>";
+}
+
 ?>
 <main class="main">
   <!-- Breadcrumb-->
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Home</a></li>
+    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/criteria">Kriteria</a></li>
     <li class="breadcrumb-item active">Baru</li>
   </ol>
@@ -31,7 +39,7 @@ mysqli_stmt_close($stmt);
               <div class="card-body">
                 <?= csrf($_SESSION['csrf_token']);  ?>
                 <div class="form-group">
-                  <label for="name">name Kriteria</label>
+                  <label for="criteria-name">Nama Kriteria</label>
                   <input class="form-control <?= isset($errors['criteria-name']) ? 'is-invalid' : ''; ?>" id="criteria-name" type="text" name="criteria-name" value="<?= isset($old_input['name']) ? $old_input['name'] : ''; ?>">
                   <?php if (isset($errors['criteria-name'])) : ?>
                     <div class="invalid-feedback"><?= $errors['criteria-name']; ?></div>
@@ -39,7 +47,7 @@ mysqli_stmt_close($stmt);
                 </div>
                 <div class="form-group">
                   <label for="bobot">Bobot</label>
-                  <input class="form-control <?= isset($errors['bobot']) ? 'is-invalid' : ''; ?>" id="bobot" type="number" step='any' name="bobot" value="<?= isset($old_input['bobot']) ? $old_input['bobot'] : ''; ?>" min="0" max="1" step="0.1">
+                  <input class="form-control <?= isset($errors['bobot']) ? 'is-invalid' : ''; ?>" id="bobot" type="number" name="bobot" value="<?= isset($old_input['bobot']) ? $old_input['bobot'] : ''; ?>" min="0" max="1" step="0.05">
                   <small class="form-text text-muted">
                     Sisa bobot yang tersedia: <?= $total_bobot; ?>
                   </small>
@@ -66,11 +74,9 @@ mysqli_stmt_close($stmt);
             </form>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>
 
-<?php include "../../templates/footer.php"; ?>
+<?php include_once "../../templates/footer.php"; ?>

@@ -24,14 +24,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	}
 
 	$id = htmlspecialchars($_POST['id']);
-	$criteria_name = htmlspecialchars($_POST['criteria-name']);
+	$criteria_name = htmlspecialchars(trim($_POST['criteria-name']));
 	$bobot = (float)htmlspecialchars($_POST['bobot']);
-	$jenis = htmlspecialchars($_POST['jenis']);
+	$jenis = strtolower(htmlspecialchars(trim($_POST['jenis'])));
 
 	// Ambil data kriteria sebelumnya dari database
 	$query = "SELECT SUM(bobot) AS total_bobot FROM kriteria WHERE id != ?";
 	$stmt = mysqli_prepare($mysqli, $query);
-	mysqli_stmt_bind_param($stmt, "i", $id);
+	mysqli_stmt_bind_param($stmt, "s", $id);
 	mysqli_stmt_execute($stmt);
 	$result = mysqli_stmt_get_result($stmt);
 	$row = mysqli_fetch_assoc($result);
@@ -41,9 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	$errors = array();
 
 	if (empty($criteria_name)) {
-		$errors['criteria-name'] = "name kriteria harus diisi";
-	} else if (strlen($criteria_name) <= 2 || strlen($criteria_name) >= 50) {
-		$errors['criteria-name'] = "name kriteria harus memiliki panjang 2 hingga 50 karakter";
+		$errors['criteria-name'] = "Nama Kriteria harus diisi";
+	} else if (strlen($criteria_name) <= 2 || strlen($criteria_name) >= 100) {
+		$errors['criteria-name'] = "Nama Kriteria harus memiliki panjang 2 hingga 100 karakter";
 	}
 
 	if ($bobot <= 0) {
@@ -61,13 +61,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	if (!empty($errors)) {
 		$_SESSION['errors'] = $errors;
 		$_SESSION['oldValues'] = array(
-			'id' => $id,
 			'name' => $criteria_name,
 			'bobot' => $bobot,
 			'jenis' => $jenis,
 		);
 
-		header("Location: " . BASE_URL_ADMIN . "/criteria/edit/?id_kriteria=$id");
+		header("Location: " . BASE_URL_ADMIN . "/criteria/" . $id . "/edit");
 		exit;
 	}
 
@@ -76,17 +75,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	$bobot = empty($bobot) ? $oldData['bobot'] : $bobot;
 	$jenis = empty($jenis) ? $oldData['jenis'] : $jenis;
 
-	$query = "UPDATE kriteria SET name = ?, bobot = ?, jenis = ? WHERE id = ?";
-	$stmt = mysqli_prepare($mysqli, $query);
-	mysqli_stmt_bind_param($stmt, "sdsi", $criteria_name, $bobot, $jenis, $id);
-	$result = mysqli_stmt_execute($stmt);
-	mysqli_stmt_close($stmt);
+	try {
+		$mysqli->begin_transaction();
+		$query = "UPDATE kriteria SET name = ?, bobot = ?, jenis = ? WHERE id = ?";
+		$stmt = mysqli_prepare($mysqli, $query);
+		mysqli_stmt_bind_param($stmt, "sdss", $criteria_name, $bobot, $jenis, $id);
+		$result = mysqli_stmt_execute($stmt);
 
-	if ($result) {
+		$mysqli->commit();
+
 		$_SESSION['flash_message'] = 'Data Kriteria Berhasil Diubah!';
 		header("Location: " . BASE_URL_ADMIN . "/criteria");
-	} else {
+	} catch (\Throwable $th) {
 		$_SESSION['flash_message'] = 'Data Kriteria Gagal Diubah!';
-		header("Location: " . BASE_URL_ADMIN . "/criteria/edit/?id_kriteria=$id");
+		header("Location: " . BASE_URL_ADMIN . "/criteria/" . $id . "/edit");
+	} finally {
+		mysqli_stmt_close($stmt);
+		$mysqli->close();
 	}
 }

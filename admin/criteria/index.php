@@ -1,6 +1,9 @@
 <?php
-include "../../lib/koneksi.php";
-include "../templates/header.php";
+include_once "../../lib/koneksi.php";
+
+$title = "Manajemen Kriteria";
+
+include_once "../templates/header.php";
 
 $stmt = mysqli_prepare($mysqli, "SELECT * from kriteria");
 mysqli_stmt_execute($stmt);
@@ -27,11 +30,13 @@ mysqli_stmt_close($stmt);
           <div class="card">
             <div class="card-header">Data Kriteria</div>
             <div class="card-body">
-              <!-- <div class="col-6 col-sm-4 col-md mb-3 mb-xl-0">
-                <a href="<?= BASE_URL_ADMIN ?>/criteria/insert" class="btn btn-primary">
-                  <i class="fa fa-plus-circle"> Tambah Kriteria</i>
-                </a>
-              </div> -->
+              <?php if ($totalBobot['Total'] != 1) : ?>
+                <div class="col-6 col-sm-4 col-md mb-3 mb-xl-0">
+                  <a href="<?= BASE_URL_ADMIN ?>/criteria/insert" class="btn btn-primary">
+                    <i class="fa fa-plus-circle"> Tambah Kriteria</i>
+                  </a>
+                </div>
+              <?php endif; ?>
               <table class="table table-responsive-sm table-striped" style="margin-top: 20px">
                 <thead>
                   <tr>
@@ -58,9 +63,11 @@ mysqli_stmt_close($stmt);
                             <i class="fa fa-pencil"></i>
                           </button>
                         </a>
-                        <!--<a href="<?= BASE_URL_ADMIN ?>/criteria/<?= $kriteria['id']; ?>/destroy" onClick="return confirm('Anda yakin ingin menghapus data ini?')" class="btn btn-danger">
-                                <i class="fa fa-trash"></i>
-                            </a>-->
+                        <?php if ($admin['role'] === 'admin') : ?>
+                          <button type="button" class="btn btn-danger" onclick="confirmDelete('<?= BASE_URL_ADMIN ?>/criteria/<?= $kriteria['id']; ?>/destroy')">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        <?php endif; ?>
                       </td>
                     </tr>
                   <?php
@@ -79,11 +86,9 @@ mysqli_stmt_close($stmt);
             </div>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>
 
-<?php include "../templates/footer.php"; ?>
+<?php include_once "../templates/footer.php"; ?>

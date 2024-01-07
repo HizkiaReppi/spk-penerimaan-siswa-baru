@@ -1,8 +1,11 @@
 <?php
 
-include "../../../lib/koneksi.php";
-include "../../../lib/functions.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
+include_once "../../../lib/functions.php";
+
+$title = 'Edit Data Kriteria';
+
+include_once "../../templates/header.php";
 
 if (!isset($_GET['id'])) {
   echo '<script>window.location.href = "' . BASE_URL_ADMIN . '/criteria";</script>';
@@ -12,16 +15,22 @@ if (!isset($_GET['id'])) {
 $idKriteria = $_GET['id'];
 
 $stmt = mysqli_prepare($mysqli, "SELECT * FROM kriteria where ID = ?");
-mysqli_stmt_bind_param($stmt, 'i', $idKriteria);
+mysqli_stmt_bind_param($stmt, 's', $idKriteria);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $kriteria = mysqli_fetch_assoc($result);
+
+if (mysqli_num_rows($result) <= 1) {
+  $_SESSION['flash_message'] = 'Data Kriteria Tidak Ditemukan!';
+  echo '<script>window.location.href = "' . BASE_URL_ADMIN . '/criteria";</script>';
+  exit;
+}
 
 // Hitung sisa bobot yang tersedia
 $total_bobot = 1;
 $query = "SELECT SUM(bobot) AS total_bobot FROM kriteria WHERE ID != ?";
 $stmt = mysqli_prepare($mysqli, $query);
-mysqli_stmt_bind_param($stmt, "i", $idKriteria);
+mysqli_stmt_bind_param($stmt, "s", $idKriteria);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $row = mysqli_fetch_assoc($result);
@@ -36,7 +45,7 @@ unset($_SESSION['oldValues']);
 <main class="main">
   <!-- Breadcrumb-->
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Home</a></li>
+    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/criteria">Kriteria</a></li>
     <li class="breadcrumb-item active">Ubah</li>
   </ol>
@@ -46,12 +55,12 @@ unset($_SESSION['oldValues']);
         <div class="col-md-6">
           <div class="card">
             <div class="card-header">Ubah Data Kriteria</div>
-            <form action="update.php" method="POST">
+            <form action="<?= BASE_URL_ADMIN . "/criteria/" . $idKriteria . "/update" ?>" method="POST">
               <div class="card-body">
                 <?= csrf($_SESSION['csrf_token']);  ?>
                 <div class="form-group">
                   <input type="hidden" name="id" value="<?= $idKriteria; ?>">
-                  <label for="name">name Kriteria</label>
+                  <label for="criteria-name">Nama Kriteria</label>
                   <input class="form-control <?= isset($errors['criteria-name']) ? 'is-invalid' : ''; ?>" id="criteria-name" type="text" name="criteria-name" value="<?= isset($oldValues['name']) ? $oldValues['name'] : ''; ?>">
                   <?php if (isset($errors['criteria-name'])) : ?>
                     <div class="invalid-feedback"><?= $errors['criteria-name']; ?></div>
@@ -59,7 +68,7 @@ unset($_SESSION['oldValues']);
                 </div>
                 <div class="form-group">
                   <label for="bobot">Bobot</label>
-                  <input class="form-control <?= isset($errors['bobot']) ? 'is-invalid' : ''; ?>" id="bobot" type="number" name="bobot" value="<?= isset($oldValues['bobot']) ? $oldValues['bobot'] : ''; ?>">
+                  <input class="form-control <?= isset($errors['bobot']) ? 'is-invalid' : ''; ?>" id="bobot" type="number" name="bobot" value="<?= isset($oldValues['bobot']) ? $oldValues['bobot'] : ''; ?>" min="0" max="1" step="0.05">
                   <small class="form-text text-muted">
                     Sisa bobot yang tersedia: <?= $total_bobot; ?>
                   </small>
@@ -93,4 +102,4 @@ unset($_SESSION['oldValues']);
   </div>
 </main>
 
-<?php include "../../templates/footer.php"; ?>
+<?php include_once "../../templates/footer.php"; ?>
