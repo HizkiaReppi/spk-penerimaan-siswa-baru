@@ -2,6 +2,9 @@
 
 include_once "../../../lib/koneksi.php";
 include_once "../../../lib/functions.php";
+
+$title = 'Tambah Data Jurusan';
+
 include_once "../../templates/header.php";
 
 ?>
@@ -9,7 +12,7 @@ include_once "../../templates/header.php";
 <main class="main">
   <!-- Breadcrumb-->
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Home</a></li>
+    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/majors">Jurusan</a></li>
     <li class="breadcrumb-item active">Baru</li>
   </ol>
@@ -19,7 +22,7 @@ include_once "../../templates/header.php";
         <div class="col-md-6">
           <div class="card">
             <div class="card-header">Tambah Data Jurusan</div>
-            <form action="store.php" method="POST">
+            <form action="<?= BASE_URL_ADMIN; ?>/majors/insert/store" method="POST">
               <div class="card-body">
                 <?= csrf($_SESSION['csrf_token']);  ?>
                 <div class="form-group">
@@ -48,9 +51,7 @@ include_once "../../templates/header.php";
             </form>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>

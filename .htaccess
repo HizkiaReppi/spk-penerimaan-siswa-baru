@@ -23,6 +23,7 @@ RewriteRule ^admin/users/([A-Za-z]+)/destroy$ admin/users/destroy/?username=$1 [
 
 # Url Rewrite for majors url
 RewriteRule ^admin/majors/([A-Za-z-_]+)/edit$ admin/majors/edit/?slug=$1 [L]
+RewriteRule ^admin/majors/([A-Za-z-_]+)/update$ admin/majors/edit/update [L]
 RewriteRule ^admin/majors/([A-Za-z-_]+)/destroy$ admin/majors/destroy/?slug=$1 [L]
 
 # Url Rewrite for criteria url
