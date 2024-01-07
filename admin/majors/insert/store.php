@@ -5,7 +5,7 @@ include "../../../lib/functions.php";
 
 if (empty($_SESSION['admin'])) {
 	echo "<center> Untuk mengakses modul, Anda harus Login<br>";
-	echo "<a href=../login><b>LOGIN</b></a></center>";
+	echo "<a href='" . BASE_URL_ADMIN . "/login'><b>LOGIN</b></a></center>";
 	exit;
 }
 
@@ -15,15 +15,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		echo "403 Forbidden";
 		exit;
 	}
-	// Validasi CSRF token
 	$csrf_token = $_POST['csrf_token'];
+	// Validasi CSRF token
 	if (!validateCSRFToken($csrf_token)) {
 		header("HTTP/1.1 403 Forbidden");
 		echo "403 Forbidden";
 		exit;
 	}
 
-	$nama_jurusan = htmlspecialchars($_POST['major-name']);
+	$nama_jurusan = htmlspecialchars(trim($_POST['major-name']));
 	$kuota = (int)$_POST['quota'];
 	$slug = createSlug($nama_jurusan);
 
@@ -31,8 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 	if (empty($nama_jurusan)) {
 		$errors['major-name'] = "Nama jurusan harus diisi";
-	} else if (strlen($nama_jurusan) <= 2 || strlen($nama_jurusan) >= 50) {
-		$errors['major-name'] = "Nama jurusan harus memiliki panjang 2 hingga 50 karakter";
+	} else if (strlen($nama_jurusan) <= 2 || strlen($nama_jurusan) >= 100) {
+		$errors['major-name'] = "Nama jurusan harus memiliki panjang 2 hingga 100 karakter";
 	} else if (!isDataAvailable($mysqli, 'jurusan', 'name', $nama_jurusan)) {
 		$errors['major-name'] = "Nama jurusan sudah terdaftar, silakan pilih nama jurusan lain";
 	} else if (!ctype_alpha(str_replace(' ', '', $nama_jurusan))) {
@@ -59,9 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$query = "INSERT INTO jurusan (name, quota, slug) VALUES (?, ?, ?)";
+	$id = generateUuid();
+
+	$query = "INSERT INTO jurusan (id, name, quota, slug) VALUES (?, ?, ?, ?)";
 	$stmt = mysqli_prepare($mysqli, $query);
-	mysqli_stmt_bind_param($stmt, "sis", $nama_jurusan, $kuota, $slug);
+	mysqli_stmt_bind_param($stmt, "ssis", $id, $nama_jurusan, $kuota, $slug);
 	$result = mysqli_stmt_execute($stmt);
 	mysqli_stmt_close($stmt);
 

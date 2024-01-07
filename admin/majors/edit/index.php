@@ -2,6 +2,9 @@
 
 include_once "../../../lib/koneksi.php";
 include_once "../../../lib/functions.php";
+
+$title = 'Edit Data Jurusan';
+
 include_once "../../templates/header.php";
 
 $slug = $_GET['slug'];
@@ -37,10 +40,12 @@ unset($_SESSION['oldValues']);
         <div class="col-md-6">
           <div class="card">
             <div class="card-header">Ubah Data Jurusan</div>
-            <form action="update.php" method="POST">
+            <form action="<?= BASE_URL_ADMIN . "/majors/" . $slug . "/update"; ?>" method="POST">
               <div class="card-body">
                 <?= csrf($_SESSION['csrf_token']);  ?>
+                <br>
                 <input type="hidden" name="slug" value="<?= $oldValues['slug']; ?>">
+                <input type="hidden" name="id" value="<?= $oldValues['id']; ?>">
                 <div class="form-group">
                   <label for="major-name">Nama Jurusan</label>
                   <input class="form-control <?= isset($errors['major-name']) ? 'is-invalid' : ''; ?>" id="major-name" type="text" name="major-name" value="<?= isset($oldValues['name']) ? $oldValues['name'] : ''; ?>">
@@ -67,9 +72,7 @@ unset($_SESSION['oldValues']);
             </form>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>

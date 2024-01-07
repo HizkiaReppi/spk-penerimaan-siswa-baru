@@ -18,15 +18,18 @@ RewriteRule ^admin/participants/([A-Za-z0-9-_]+)/destroy$ admin/participants/des
 
 # Url Rewrite for users url
 RewriteRule ^admin/users/([A-Za-z]+)/edit$ admin/users/edit/?username=$1 [L]
+RewriteRule ^admin/users/([A-Za-z]+)/update$ admin/users/edit/update [L]
 RewriteRule ^admin/users/([A-Za-z]+)/destroy$ admin/users/destroy/?username=$1 [L]
 
 # Url Rewrite for majors url
 RewriteRule ^admin/majors/([A-Za-z-_]+)/edit$ admin/majors/edit/?slug=$1 [L]
+RewriteRule ^admin/majors/([A-Za-z-_]+)/update$ admin/majors/edit/update [L]
 RewriteRule ^admin/majors/([A-Za-z-_]+)/destroy$ admin/majors/destroy/?slug=$1 [L]
 
 # Url Rewrite for criteria url
-RewriteRule ^admin/criteria/([0-9]+)/edit$ admin/criteria/edit/?id=$1 [L]
-RewriteRule ^admin/criteria/([0-9]+)/destroy$ admin/criteria/destroy/?id=$1 [L]
+RewriteRule ^admin/criteria/([A-Za-z0-9-_]+)/edit$ admin/criteria/edit/?id=$1 [L]
+RewriteRule ^admin/criteria/([A-Za-z0-9-_]+)/update$ admin/criteria/edit/update [L]
+RewriteRule ^admin/criteria/([A-Za-z0-9-_]+)/destroy$ admin/criteria/destroy/index.php?id=$1 [L]
 
 # Url Rewrite for values url
 RewriteRule ^admin/values/([A-Za-z0-9-_]+)/edit$ admin/values/edit/index.php?no_pendaftaran=$1 [L]

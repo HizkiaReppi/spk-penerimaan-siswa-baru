@@ -23,14 +23,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$nama_jurusan = htmlspecialchars($_POST['major-name']);
+	$id = $_POST['id'];
+	$nama_jurusan = htmlspecialchars(trim($_POST['major-name']));
 	$kuota = (int)htmlspecialchars($_POST['quota']);
 	$slug = htmlspecialchars($_POST['slug']);
 
 	// Ambil data jurusan sebelumnya dari database
-	$query = "SELECT id, name, quota FROM jurusan WHERE slug = ?";
+	$query = "SELECT * FROM jurusan WHERE id = ?";
 	$stmt = mysqli_prepare($mysqli, $query);
-	mysqli_stmt_bind_param($stmt, "s", $slug);
+	mysqli_stmt_bind_param($stmt, "s", $id);
 	mysqli_stmt_execute($stmt);
 	$result = mysqli_stmt_get_result($stmt);
 	$oldData = mysqli_fetch_assoc($result);
@@ -66,26 +67,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 			'slug' => $slug,
 		);
 
-		header("Location: " . BASE_URL_ADMIN . "/majors/edit/?slug=$slug");
+		header("Location: " . BASE_URL_ADMIN . "/majors/" . $oldData['slug'] . "/edit");
 		exit;
 	}
 
 	// Gunakan data sebelumnya jika user tidak mengisi data baru
 	$nama_jurusan = empty($nama_jurusan) ? $oldData['name'] : $nama_jurusan;
 	$kuota = empty($kuota) ? $oldData['quota'] : $kuota;
-	$slug = createSlug($nama_jurusan);
+	$slug = empty($nama_jurusan) ? $oldData['slug'] : createSlug($nama_jurusan);
 
-	$query = "UPDATE jurusan SET name = ?, quota = ?, slug = ? WHERE id = ?";
-	$stmt = mysqli_prepare($mysqli, $query);
-	mysqli_stmt_bind_param($stmt, "sisi", $nama_jurusan, $kuota, $slug, $oldData['id']);
-	$result = mysqli_stmt_execute($stmt);
-	mysqli_stmt_close($stmt);
+	try {
+		$mysqli->begin_transaction();
+		$query = "UPDATE jurusan SET name = ?, quota = ?, slug = ? WHERE id = ?";
+		$stmt = mysqli_prepare($mysqli, $query);
+		mysqli_stmt_bind_param($stmt, "siss", $nama_jurusan, $kuota, $slug, $id);
+		$result = mysqli_stmt_execute($stmt);
 
-	if ($result) {
+		$mysqli->commit();
+
 		$_SESSION['flash_message'] = 'Data Jurusan Berhasil Diubah!';
 		header("Location: " . BASE_URL_ADMIN . "/majors");
-	} else {
+	} catch (\Exception $e) {
+		$mysqli->rollback();
 		$_SESSION['flash_message'] = 'Data Jurusan Gagal Diubah!';
-		header("Location: " . BASE_URL_ADMIN . "/majors/edit/?slug=$slug");
+		header("Location: " . BASE_URL_ADMIN . "/majors/" . $oldData['slug'] . "/edit");
+	} finally {
+		mysqli_stmt_close($stmt);
+		$mysqli->close();
 	}
 }

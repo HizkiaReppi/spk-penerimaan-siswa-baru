@@ -5,7 +5,7 @@ include "../../../lib/functions.php";
 
 if (empty($_SESSION['admin'])) {
 	echo "<center> Untuk mengakses modul, Anda harus Login<br>";
-	echo "<a href=../login><b>LOGIN</b></a></center>";
+	echo "<a href='" . BASE_URL_ADMIN . "/login'><b>LOGIN</b></a></center>";
 	exit;
 }
 
@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$criteria_name = htmlspecialchars($_POST['criteria-name']);
+	$criteria_name = htmlspecialchars(trim($_POST['criteria-name']));
 	$bobot = (float)htmlspecialchars($_POST['bobot']);
-	$jenis = htmlspecialchars($_POST['jenis']);
+	$jenis = strtolower(htmlspecialchars(trim($_POST['jenis'])));
 
 	// Ambil data kriteria sebelumnya dari database
 	$stmt = mysqli_prepare($mysqli, "SELECT SUM(bobot) AS total_bobot FROM kriteria ");
@@ -38,9 +38,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	$errors = array();
 
 	if (empty($criteria_name)) {
-		$errors['criteria-name'] = "name kriteria harus diisi";
-	} else if (strlen($criteria_name) <= 2 || strlen($criteria_name) >= 50) {
-		$errors['criteria-name'] = "name kriteria harus memiliki panjang 2 hingga 50 karakter";
+		$errors['criteria-name'] = "Nama Kriteria harus diisi";
+	} else if (strlen($criteria_name) <= 2 || strlen($criteria_name) >= 100) {
+		$errors['criteria-name'] = "Nama Kriteria harus memiliki panjang 2 hingga 109 karakter";
 	}
 
 	if ($bobot <= 0) {
@@ -68,17 +68,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$query = "INSERT INTO kriteria (name, bobot, jenis) VALUES (?, ?, ?)";
-	$stmt = mysqli_prepare($mysqli, $query);
-	mysqli_stmt_bind_param($stmt, "sds", $criteria_name, $bobot, $jenis);
-	$result = mysqli_stmt_execute($stmt);
-	mysqli_stmt_close($stmt);
+	$id = generateUuid();
 
-	if ($result) {
+	try {
+		$mysqli->begin_transaction();
+
+		$query = "INSERT INTO kriteria (id, name, bobot, jenis) VALUES (?, ?, ?, ?)";
+		$stmt = mysqli_prepare($mysqli, $query);
+		mysqli_stmt_bind_param($stmt, "ssds", $id, $criteria_name, $bobot, $jenis);
+		$result = mysqli_stmt_execute($stmt);
+
+		$mysqli->commit();
+
 		$_SESSION['flash_message'] = 'Data Kriteria Berhasil Ditambah!';
 		header("Location: " . BASE_URL_ADMIN . "/criteria");
-	} else {
+	} catch (\Exception $e) {
+		$mysqli->rollback();
 		$_SESSION['flash_message'] = 'Data Kriteria Gagal Ditambah!';
 		header("Location: " . BASE_URL_ADMIN . "/criteria/insert");
+	} finally {
+		mysqli_stmt_close($stmt);
+		$mysqli->close();
 	}
 }

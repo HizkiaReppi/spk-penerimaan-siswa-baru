@@ -1,12 +1,13 @@
 <?php
 
 include "../../lib/koneksi.php";
+include "../../lib/functions.php";
+
+$title = 'Manajemen Jurusan';
+
 include "../templates/header.php";
 
-$stmt = mysqli_prepare($mysqli, "SELECT * FROM jurusan");
-mysqli_stmt_execute($stmt);
-$tampiljurusan = mysqli_stmt_get_result($stmt);
-mysqli_stmt_close($stmt);
+$tampiljurusan = getAllJurusan($mysqli);
 
 ?>
 
@@ -64,9 +65,7 @@ mysqli_stmt_close($stmt);
             </div>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>
