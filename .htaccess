@@ -18,6 +18,7 @@ RewriteRule ^admin/participants/([A-Za-z0-9-_]+)/destroy$ admin/participants/des
 
 # Url Rewrite for users url
 RewriteRule ^admin/users/([A-Za-z]+)/edit$ admin/users/edit/?username=$1 [L]
+RewriteRule ^admin/users/([A-Za-z]+)/update$ admin/users/edit/update [L]
 RewriteRule ^admin/users/([A-Za-z]+)/destroy$ admin/users/destroy/?username=$1 [L]
 
 # Url Rewrite for majors url

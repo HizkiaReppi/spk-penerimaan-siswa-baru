@@ -4,8 +4,8 @@ include "../../../lib/koneksi.php";
 include "../../../lib/functions.php";
 
 if (empty($_SESSION['admin'])) {
-	echo "<center> Untuk mengakses modul, Anda harus Login<br>";
-	echo "<a href=../login><b>LOGIN</b></a></center>";
+	$_SESSION['flash_message'] = 'Untuk mengakses modul, Anda harus Login';
+	header("Location: " . BASE_URL_ADMIN . "/login");
 	exit;
 }
 
@@ -23,12 +23,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$fullname = htmlspecialchars($_POST['fullname']);
-	$role = htmlspecialchars($_POST['role']);
-	$username = htmlspecialchars($_POST['username']);
-	$password = htmlspecialchars($_POST['password']);
-	$passwordConfirmation = htmlspecialchars($_POST['password-confirmation']);
-	$photo = isset($_POST['photo_profile']) ? htmlspecialchars($_POST['photo_profile']) : null;
+	$fullname = htmlspecialchars(trim($_POST['fullname']));
+	$role = htmlspecialchars(trim($_POST['role']));
+	$username = htmlspecialchars(trim($_POST['username']));
+	$password = htmlspecialchars(trim($_POST['password']));
+	$passwordConfirmation = htmlspecialchars(trim($_POST['password-confirmation']));
+	$photo = isset($_POST['photo_profile']) ? htmlspecialchars(trim($_POST['photo_profile'])) : null;
 
 	$errors = array();
 
@@ -77,11 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	}
 
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+	$id = generateUuid();
 
-	$mysqli->begin_transaction();
 	try {
-		$stmt = $mysqli->prepare("INSERT INTO admin (fullname, role, username, password, photo) VALUES (?, ?, ?, ?, ?)");
-		$stmt->bind_param("sssss", $fullname, $role, $username, $hashed_password, $photo);
+		$mysqli->begin_transaction();
+		$stmt = $mysqli->prepare("INSERT INTO admin (id, fullname, role, username, password, photo) VALUES (?, ?, ?, ?, ?, ?)");
+		$stmt->bind_param("ssssss", $id, $fullname, $role, $username, $hashed_password, $photo);
 		$stmt->execute();
 
 		$mysqli->commit();
@@ -90,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		header("Location: " . BASE_URL_ADMIN . "/users");
 	} catch (\Exception $error) {
 		$_SESSION['flash_message'] = 'Data Pengguna Gagal Disimpan!';
-		echo "<script>console.log('". $error->getMessage() ."')</script>";
+		echo "<script>console.log('" . $error->getMessage() . "')</script>";
 
 		$mysqli->rollback();
 		header("Location: " . BASE_URL_ADMIN . "/users/insert/");

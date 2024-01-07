@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 			'photo_profile' => $photo,
 		);
 
-		header("Location: " . BASE_URL_ADMIN . "/users/edit/?username=$username");
+		header("Location: " . BASE_URL_ADMIN . "/users/" . $username . "/edit");
 		exit;
 	}
 
@@ -110,6 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		header("Location: " . BASE_URL_ADMIN . "/users");
 	} else {
 		$_SESSION['flash_message'] = 'Data Pengguna Gagal Diubah!';
-		header("Location: " . BASE_URL_ADMIN . "/users/edit/?username=$username");
+		header("Location: " . BASE_URL_ADMIN . "/users/" . $username . "/edit");
 	}
 }

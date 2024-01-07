@@ -1,6 +1,9 @@
 <?php
 include "../../../lib/koneksi.php";
 include "../../../lib/functions.php";
+
+$title = 'Edit User';
+
 include "../../templates/header.php";
 
 $sessionUser = $_SESSION['admin'];
@@ -8,13 +11,13 @@ $username = $_GET['username'];
 
 // Periksa apakah pengguna telah login sebelum mengakses halaman ini
 if (!isset($_SESSION['admin'])) {
-  header("location: ../../login/");
+  header("location: " . BASE_URL_ADMIN  . "/login/");
   exit;
 }
 
 // Periksa apakah pengguna memiliki hak akses untuk mengakses halaman ini
 if ($sessionUser['role'] != 'admin' && $sessionUser['username'] != $username) {
-  echo "<script>alert('Anda tidak memiliki hak akses untuk mengakses halaman ini'); window.location = '../../dashboard';</script>";
+  echo "<script>alert('Anda tidak memiliki hak akses untuk mengakses halaman ini'); window.location = '" . BASE_URL_ADMIN . "/dashboard';</script>";
   exit;
 }
 
@@ -48,7 +51,7 @@ unset($_SESSION['oldValues']);
         <div class="col-md-4">
           <div class="card">
             <div class="card-header">Foto</div>
-            <form action="update.php" method="post" enctype="multipart/form-data">
+            <form action="<?= BASE_URL_ADMIN . "/users/" . $admin['username'] . "/update" ?>" method="post" enctype="multipart/form-data">
               <div class="card-body">
                 <div>
                   <?php if (!empty($admin['photo'])) : ?>
