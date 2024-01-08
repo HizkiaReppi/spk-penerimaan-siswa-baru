@@ -1,9 +1,17 @@
 <?php
-include "../../../lib/koneksi.php";
-include "../../../lib/functions.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
+include_once "../../../lib/functions.php";
+
+$title = "Ubah Data Nilai";
+
+include_once "../../templates/header.php";
 
 $no_daftar = $_GET['no_pendaftaran'];
+
+if (!isset($_SESSION['admin'])) {
+  header("Location: " . BASE_URL_ADMIN . "/login");
+}
+
 $session_admin = $_SESSION['admin'];
 
 $stmtPeserta = $mysqli->prepare("SELECT name, C1, C2, C3, C4, C5 FROM peserta p JOIN nilai n ON p.no_pendaftaran = n.no_pendaftaran WHERE n.no_pendaftaran = ?");
@@ -14,32 +22,43 @@ $peserta = $resultPeserta->fetch_assoc();
 $resultPeserta->close();
 $stmtPeserta->close();
 
-$stmtC1 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = 1");
-$stmtC2 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = 2");
-$stmtC3 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = 3");
-$stmtC4 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = 4");
-$stmtC5 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = 5");
+$stmt = $mysqli->prepare("SELECT id FROM kriteria");
+$stmt->execute();
+$result = $stmt->get_result();
+$kriteria = $result->fetch_all();
+$stmt->close();
 
+$stmtC1 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = ?");
+$stmtC2 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = ?");
+$stmtC3 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = ?");
+$stmtC4 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = ?");
+$stmtC5 = $mysqli->prepare("SELECT * FROM kriteria WHERE id = ?");
+
+$stmtC1->bind_param('i', $kriteria[0][0]);
 $stmtC1->execute();
 $resultC1 = $stmtC1->get_result();
 $C1 = $resultC1->fetch_assoc();
 $stmtC1->close();
 
+$stmtC2->bind_param('i', $kriteria[1][0]);
 $stmtC2->execute();
 $resultC2 = $stmtC2->get_result();
 $C2 = $resultC2->fetch_assoc();
 $stmtC2->close();
 
+$stmtC3->bind_param('i', $kriteria[2][0]);
 $stmtC3->execute();
 $resultC3 = $stmtC3->get_result();
 $C3 = $resultC3->fetch_assoc();
 $stmtC3->close();
 
+$stmtC4->bind_param('i', $kriteria[3][0]);
 $stmtC4->execute();
 $resultC4 = $stmtC4->get_result();
 $C4 = $resultC4->fetch_assoc();
 $stmtC4->close();
 
+$stmtC5->bind_param('i', $kriteria[4][0]);
 $stmtC5->execute();
 $resultC5 = $stmtC5->get_result();
 $C5 = $resultC5->fetch_assoc();
@@ -110,4 +129,4 @@ $stmtC5->close();
   </div>
 </main>
 
-<?php include "../../templates/footer.php"; ?>
+<?php include_once "../../templates/footer.php"; ?>
