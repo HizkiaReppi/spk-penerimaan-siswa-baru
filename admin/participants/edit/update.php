@@ -18,36 +18,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$no_pendaftaran = $_POST['no_pendaftaran'];
-	$email = $_POST['email'];
-	$password = $_POST['passwordOld'];
-	$passwordNew = $_POST['passwordNew'];
-	$passwordConfirm = $_POST['passwordConfirm'];
-	$nisn = (int)$_POST['nisn'];
-	$nama = $_POST['name'];
-	$jurusan = $_POST['jurusan'];
-	$asalSekolah = $_POST['asal_sekolah'];
-	$uas = (int)$_POST['nilai_ujian_sekolah'];
-	$gender = $_POST['jenis_kelamin'];
-	$birthday = $_POST['tanggal_lahir'];
-	$alamat = $_POST['alamat'];
+	$no_pendaftaran = htmlspecialchars(trim($_POST['no_pendaftaran']));
+	$email = htmlspecialchars(trim($_POST['email']));
+	$password = htmlspecialchars(trim($_POST['passwordOld']));
+	$passwordNew = htmlspecialchars(trim($_POST['passwordNew']));
+	$passwordConfirm = htmlspecialchars(trim($_POST['passwordConfirm']));
+	$nisn = (int)htmlspecialchars(trim($_POST['nisn']));
+	$nama = htmlspecialchars(trim($_POST['name']));
+	$jurusan = htmlspecialchars(trim($_POST['jurusan']));
+	$asalSekolah = htmlspecialchars(trim($_POST['asal_sekolah']));
+	$uas = (int)htmlspecialchars(trim($_POST['nilai_ujian_sekolah']));
+	$gender = htmlspecialchars(trim($_POST['gender']));
+	$birthday = htmlspecialchars(trim($_POST['tanggal_lahir']));
+	$alamat = htmlspecialchars(trim($_POST['alamat']));
+
+	// Ambil data pengguna sebelumnya dari database
+	$query = "SELECT * FROM peserta WHERE no_pendaftaran = ?";
+	$stmt = mysqli_prepare($mysqli, $query);
+	mysqli_stmt_bind_param($stmt, "s", $no_pendaftaran);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+	$oldData = mysqli_fetch_assoc($result);
+	mysqli_stmt_close($stmt);
 
 	// validate data
 	$errors = array();
 
-	$stmt = $mysqli->prepare("SELECT no_pendaftaran, password FROM peserta where nisn = ?");
-	$stmt->bind_param('i', $nisn);
-	$stmt->execute();
-	$results = $stmt->get_result();
-	$peserta = $results->fetch_assoc();
-	$stmt->close();
-
-	if ($no_pendaftaran !== $peserta['no_pendaftaran']) {
+	if ($no_pendaftaran !== $oldData['no_pendaftaran']) {
 		$errors['no_pendaftaran'] = "Nomor Pendaftaran tidak dapat diubah";
 	}
 
 	// validate email
-	if ($email !== $peserta['email']) {
+	if ($email !== $oldData['email']) {
 		if (empty($email)) {
 			$errors['email'] = "Email harus diisi";
 		} elseif (!isDataAvailable($mysqli, 'peserta', 'email', $email)) {
@@ -60,19 +62,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	}
 
 	// validate password
-	if (empty($passwordOld)) {
-		$errors['password'] = "Password Lama harus diisi";
-	} else if (empty($passwordNew)) {
-		$errors['password'] = "Password Baru harus diisi";
-	} else if ($passwordOld !== $peserta['password']) {
-		$errors['password'] = "Password Lama tidak sesuai!";
-	} else if (strlen($passwordNew) <= 5 || strlen($passwordNew) >= 50) {
-		$errors['password'] = "Password harus memiliki panjang 5 hingga 50 karakter";
-	} else if ($passwordNew !== $passwordConfirm) {
-		$errors['password'] = "Password dan konfirmasi password tidak cocok";
+	if (!empty($passwordNew) || !empty($passwordConfirm)) {
+		if (empty($password)) {
+			$errors['password'] = "Password Lama harus diisi";
+		} else if (empty($passwordNew)) {
+			$errors['password'] = "Password Baru harus diisi";
+		} else if ($password !== $peserta['password']) {
+			$errors['password'] = "Password Lama tidak sesuai!";
+		} else if (strlen($passwordNew) <= 5 || strlen($passwordNew) >= 100) {
+			$errors['password'] = "Password harus memiliki panjang 5 hingga 100 karakter";
+		} else if ($passwordNew !== $passwordConfirm) {
+			$errors['password'] = "Password dan konfirmasi password tidak cocok";
+		}
 	}
 
-	if ($nisn !== $peserta['nisn']) {
+	if ($nisn !== $oldData['nisn']) {
 		if (empty($nisn)) {
 			$errors['nisn'] = "NISN harus diisi";
 		} elseif (!is_numeric($nisn)) {
@@ -170,29 +174,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$password = password_hash($passwordNew, PASSWORD_DEFAULT);
+	$nisn = empty($nisn) ? $oldData['nisn'] : $nisn;
+	$email = empty($email) ? $oldData['email'] : $email;
+	$password = empty($password) ? $oldData['password'] : password_hash($password, PASSWORD_DEFAULT);
 
-	// Proses penyimpanan data ke database
-	$querySimpan = mysqli_prepare($mysqli, "UPDATE peserta SET email = ?, password = ?, nisn = ?, id_jurusan = ?, name = ?, jenis_kelamin = ?, tanggal_lahir = ?, alamat = ?, asal_sekolah = ?, nilai_ujian_sekolah = ?");
-	mysqli_stmt_bind_param($querySimpan, "ssissssssi", $email, $password, $nisn, $jurusan, $nama, $gender, $birthday, $alamat, $asalSekolah, $uas);
+	try {
+		$mysqli->autocommit(FALSE);
+		$mysqli->begin_transaction();
 
-	if (mysqli_stmt_execute($querySimpan)) {
+		$querySimpan = mysqli_prepare($mysqli, "UPDATE peserta SET email = ?, password = ?, nisn = ?, id_jurusan = ?, name = ?, jenis_kelamin = ?, tanggal_lahir = ?, alamat = ?, asal_sekolah = ?, nilai_ujian_sekolah = ? WHERE no_pendaftaran = ?");
+		mysqli_stmt_bind_param($querySimpan, "ssissssssis", $email, $password, $nisn, $jurusan, $nama, $gender, $birthday, $alamat, $asalSekolah, $uas, $no_pendaftaran);
+		mysqli_stmt_execute($querySimpan);
+
 		$id = generateUuid();
-		$querynilai = mysqli_prepare($mysqli, "INSERT INTO nilai (id, no_pendaftaran, C1, C2, C3, C4, C5) VALUES (?, ?, ?, 0, 0, 0, 0)");
-		mysqli_stmt_bind_param($querynilai, "ssi", $id, $kodePeserta, $uas);
+		$querynilai = mysqli_prepare($mysqli, "UPDATE nilai SET C1 = ? WHERE no_pendaftaran = ? ");
+		mysqli_stmt_bind_param($querynilai, "is", $uas, $kodePeserta);
 		mysqli_stmt_execute($querynilai);
-		mysqli_stmt_close($querynilai);
 
-		$id = generateUuid();
-		$querynormalisasi = mysqli_prepare($mysqli, "INSERT INTO normalisasi (id, no_pendaftaran, C1, C2, C3, C4, C5) VALUES (?, ?, 0, 0, 0, 0, 0)");
-		mysqli_stmt_bind_param($querynormalisasi, "ss", $id, $kodePeserta);
-		mysqli_stmt_execute($querynormalisasi);
-		mysqli_stmt_close($querynormalisasi);
+		$mysqli->commit();
 
 		$_SESSION['flash_message'] = 'Data Peserta Berhasil Diubah!';
 		header("Location: " . BASE_URL_ADMIN . "/participants");
-	} else {
+	} catch (\Exception $e) {
+		$mysqli->rollback();
+
 		$_SESSION['flash_message'] = 'Data Peserta Gagal Diubah!';
 		header("Location: " . BASE_URL_ADMIN . "/participants");
+	} finally {
+		$mysqli->autocommit(TRUE);
+		mysqli_stmt_close($querySimpan);
+		mysqli_stmt_close($querynilai);
+		mysqli_stmt_close($querynormalisasi);
+		$mysqli->close();
 	}
 }
