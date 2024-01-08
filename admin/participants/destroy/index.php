@@ -1,13 +1,12 @@
 <?php
 session_start();
+include_once "../../../lib/koneksi.php";
 
 if (empty($_SESSION['admin'])) {
 	echo "<center> Untuk mengakses modul, Anda harus Login<br>";
-	echo "<a href=../login><b>LOGIN</b></a></center>";
+	echo "<a href='" . BASE_URL_ADMIN . "/login'><b>LOGIN</b></a></center>";
 	exit;
 }
-
-include_once "../../../lib/koneksi.php";
 
 $no_daftar = $_GET['no_pendaftaran'];
 

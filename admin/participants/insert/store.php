@@ -22,17 +22,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		exit;
 	}
 
-	$email = $_POST['email'];
-	$password = $_POST['password'];
-	$passwordConfirm = $_POST['passwordConfirm'];
+	$email = htmlspecialchars(trim($_POST['email']));
+	$password = htmlspecialchars(trim($_POST['password']));
+	$passwordConfirm = htmlspecialchars(trim($_POST['passwordConfirm']));
 	$nisn = (int)$_POST['nisn'];
-	$nama = $_POST['name'];
-	$jurusan = $_POST['jurusan'];
-	$asalSekolah = $_POST['asal-sekolah'];
+	$nama = htmlspecialchars(trim($_POST['name']));
+	$jurusan = htmlspecialchars(trim($_POST['jurusan']));
+	$asalSekolah = htmlspecialchars(trim($_POST['asal-sekolah']));
 	$uas = (int)$_POST['uas'];
-	$gender = $_POST['gender'];
-	$birthday = $_POST['birthday'];
-	$alamat = $_POST['alamat'];
+	$gender = htmlspecialchars(trim($_POST['gender']));
+	$birthday = htmlspecialchars(trim($_POST['birthday']));
+	$alamat = htmlspecialchars(trim($_POST['alamat']));
 
 	// validate data
 	$errors = array();
@@ -158,25 +158,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 	$password = password_hash($password, PASSWORD_DEFAULT);
 	$kodePeserta = generateKodePeserta($mysqli);
 
-	// Proses penyimpanan data ke database
-	$querySimpan = mysqli_prepare($mysqli, "INSERT INTO peserta (no_pendaftaran, email, password, nisn, id_jurusan, name, jenis_kelamin, tanggal_lahir, alamat, asal_sekolah, nilai_ujian_sekolah) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	mysqli_stmt_bind_param($querySimpan, "sssissssssi", $kodePeserta, $email, $password, $nisn, $jurusan, $nama, $gender, $birthday, $alamat, $asalSekolah, $uas);
+	try {
+		$mysqli->autocommit(FALSE);
+		$mysqli->begin_transaction();
 
-	if (mysqli_stmt_execute($querySimpan)) {
+		$querySimpan = mysqli_prepare($mysqli, "INSERT INTO peserta (no_pendaftaran, email, password, nisn, id_jurusan, name, jenis_kelamin, tanggal_lahir, alamat, asal_sekolah, nilai_ujian_sekolah) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		mysqli_stmt_bind_param($querySimpan, "sssissssssi", $kodePeserta, $email, $password, $nisn, $jurusan, $nama, $gender, $birthday, $alamat, $asalSekolah, $uas);
+		mysqli_stmt_execute($querySimpan);
+
 		$querynilai = mysqli_prepare($mysqli, "INSERT INTO nilai (no_pendaftaran, C1, C2, C3, C4, C5) VALUES (?, ?, 0, 0, 0, 0)");
 		mysqli_stmt_bind_param($querynilai, "si", $kodePeserta, $uas);
 		mysqli_stmt_execute($querynilai);
-		mysqli_stmt_close($querynilai);
 
 		$querynormalisasi = mysqli_prepare($mysqli, "INSERT INTO normalisasi (no_pendaftaran, C1, C2, C3, C4, C5) VALUES (?, 0, 0, 0, 0, 0)");
 		mysqli_stmt_bind_param($querynormalisasi, "s", $kodePeserta);
 		mysqli_stmt_execute($querynormalisasi);
-		mysqli_stmt_close($querynormalisasi);
+
+		$mysqli->commit();
 
 		$_SESSION['flash_message'] = 'Data Peserta Berhasil Disimpan!';
 		header("Location: " . BASE_URL_ADMIN . "/participants");
-	} else {
+	} catch (\Exception $e) {
+		$mysqli->rollback();
+
 		$_SESSION['flash_message'] = 'Data Peserta Gagal Disimpan!';
 		header("Location: " . BASE_URL_ADMIN . "/participants");
+	} finally {
+		$mysqli->autocommit(TRUE);
+		mysqli_stmt_close($querySimpan);
+		mysqli_stmt_close($querynilai);
+		mysqli_stmt_close($querynormalisasi);
+		$mysqli->close();
 	}
 }

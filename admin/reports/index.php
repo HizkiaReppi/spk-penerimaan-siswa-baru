@@ -1,12 +1,17 @@
 <?php
-include "../../lib/koneksi.php";
-include "../templates/header.php";
+include_once "../../lib/koneksi.php";
+
+$title = "Laporan";
+
+include_once "../templates/header.php";
+
+$tampiljurusan = mysqli_query($mysqli, "SELECT * from jurusan");
 
 ?>
 <main class="main">
   <!-- Breadcrumb-->
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN; ?>/dashboard">Home</a></li>
+    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN; ?>/dashboard">Dashboard</a></li>
     <li class="breadcrumb-item active">Laporan</li>
     <!-- Breadcrumb Menu-->
   </ol>
@@ -20,16 +25,11 @@ include "../templates/header.php";
             </div>
             <div class="card-body">
               <div class="list-group">
-                <?php
-                $tampiljurusan = mysqli_query($mysqli, "SELECT * from jurusan");
-                while ($jurusan = mysqli_fetch_array($tampiljurusan)) {
-                ?>
+                <?php while ($jurusan = mysqli_fetch_array($tampiljurusan)) : ?>
                   <a class="list-group-item list-group-item-action list-group-item-info" href="<?= BASE_URL_ADMIN; ?>/reports/accepts/<?= $jurusan['id']; ?>">
                     <?= $jurusan['name']; ?>
                   </a>
-                <?php
-                }
-                ?>
+                <?php endwhile; ?>
               </div>
             </div>
           </div>
@@ -43,15 +43,13 @@ include "../templates/header.php";
               <div class="list-group">
                 <?php
                 $tampiljurusan = mysqli_query($mysqli, "SELECT * from jurusan");
-                while ($jurusan = mysqli_fetch_array($tampiljurusan)) {
+                while ($jurusan = mysqli_fetch_array($tampiljurusan)) :
                 ?>
                   <a class="list-group-item list-group-item-action list-group-item-info" href="<?= BASE_URL_ADMIN; ?>/reports/registered/<?= $jurusan['id']; ?>">
                     <?= $jurusan['name']; ?>
                   </a>
-                <?php
-                }
-                ?>
-                <a class="list-group-item list-group-item-action list-group-item-info" href="laporan_pendaftar.php?id_jurusan=0">Semua Jurusan</a>
+                <?php endwhile; ?>
+                <a class="list-group-item list-group-item-action list-group-item-info" href="<?= BASE_URL_ADMIN; ?>/reports/registered/all/">Semua Jurusan</a>
               </div>
             </div>
           </div>
@@ -62,6 +60,4 @@ include "../templates/header.php";
     </div>
   </div>
 </main>
-<?php
-include "../templates/footer.php";
-?>
+<?php include_once "../templates/footer.php"; ?>

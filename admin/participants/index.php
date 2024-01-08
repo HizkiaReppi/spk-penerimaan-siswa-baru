@@ -1,7 +1,10 @@
 <?php
 
-include "../../lib/koneksi.php";
-include "../templates/header.php";
+include_once "../../lib/koneksi.php";
+
+$title = 'Manajemen Peserta';
+
+include_once "../templates/header.php";
 
 $query = "SELECT p.no_pendaftaran, p.nisn, p.name AS nama_peserta, p.asal_sekolah, j.name AS nama_jurusan
           FROM peserta p
@@ -28,7 +31,7 @@ $mysqli->close();
             <div class="card-header">Data Peserta</div>
             <div class="card-body">
               <div class="col-6 col-sm-4 col-md mb-3 mb-xl-0">
-                <a href="<?= BASE_URL_ADMIN ?>/participants/insert" class="btn btn-primary">
+                <a href="<?= BASE_URL_ADMIN ?>/participants/insert/" class="btn btn-primary">
                   <i class="fa fa-plus-circle"></i> Tambah Peserta
                 </a>
               </div>
@@ -80,4 +83,4 @@ $mysqli->close();
   </div>
 </main>
 
-<?php include "../templates/footer.php"; ?>
+<?php include_once "../templates/footer.php"; ?>

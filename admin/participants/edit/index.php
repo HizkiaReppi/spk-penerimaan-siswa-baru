@@ -1,11 +1,14 @@
 <?php
 include_once "../../../lib/koneksi.php";
 include_once "../../../lib/functions.php";
+
+$title = "Edit Data Peserta";
+
 include_once "../../templates/header.php";
 
 $no_pendaftaran = $_GET['no_pendaftaran'];
 
-$stmt = $mysqli->prepare("SELECT * FROM peserta where no_pendaftaran = ?");
+$stmt = $mysqli->prepare("SELECT * FROM peserta WHERE no_pendaftaran = ?");
 $stmt->bind_param('s', $no_pendaftaran);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -17,6 +20,8 @@ $mysqli->close();
 
 $oldValues = isset($_SESSION['old_input']) ? $_SESSION['old_input'] : $peserta;
 unset($_SESSION['old_input']);
+
+$oldValues['tanggal_lahir'] = date('Y-m-d', strtotime($oldValues['tanggal_lahir']));
 
 ?>
 <main class="main">
@@ -32,7 +37,7 @@ unset($_SESSION['old_input']);
         <div class="col-md-8">
           <div class="card">
             <div class="card-header">Ubah Data Peserta</div>
-            <form action="update" method="post">
+            <form action="<?= BASE_URL_ADMIN . "/participants/" . $no_pendaftaran . '/update' ?>" method="POST">
               <div class="card-body">
                 <div class="form-group">
                   <?= csrf($_SESSION['csrf_token']); ?>

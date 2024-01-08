@@ -43,7 +43,9 @@ RewriteRule ^admin/reports/accepts/([A-Za-z0-9-_]+)$ admin/reports/accepts/index
 RewriteRule ^admin/reports/accepts/([A-Za-z0-9-_]+)/print$ admin/reports/accepts/print/index.php?id_jurusan=$1 [L]
 
 RewriteRule ^admin/reports/registered/([A-Za-z0-9-_]+)$ admin/reports/registered/index.php?id_jurusan=$1 [L]
+RewriteRule ^admin/reports/registered/all/$ admin/reports/registered/index.php?id_jurusan=all [L]
 RewriteRule ^admin/reports/registered/([A-Za-z0-9-_]+)/print$ admin/reports/registered/print/index.php?id_jurusan=$1 [L]
+RewriteRule ^admin/reports/registered/all/print$ admin/reports/registered/print/index.php?id_jurusan=$1 [L]
 
 # Url Rewrite for result detail url
 RewriteRule ^results/([A-Za-z0-9-_]+)$ results/detail/index.php?slug=$1 [L]

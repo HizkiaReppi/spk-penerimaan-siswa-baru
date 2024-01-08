@@ -1,9 +1,11 @@
 <?php
-include "../../../lib/koneksi.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
+
+$title = "Normalisasi";
+
+include_once "../../templates/header.php";
 
 $id_jurusan = $_GET['id_jurusan'];
-$session_admin = $_SESSION['admin'];
 
 // Prepared statement untuk mendapatkan nilai maksimal
 $stmtMax = $mysqli->prepare("SELECT MAX(C1) AS maxC1, MAX(C2) AS maxC2, MAX(C3) AS maxC3, MAX(C4) AS maxC4, MAX(C5) AS maxC5 FROM peserta p INNER JOIN jurusan j ON p.id_jurusan=j.id INNER JOIN nilai n ON p.no_pendaftaran = n.no_pendaftaran WHERE p.id_jurusan = ?");
@@ -85,7 +87,7 @@ $stmtNilaiAkhir->close();
 <main class="main">
   <!-- Breadcrumb-->
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Home</a></li>
+    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/dashboard">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN ?>/normalization">Normalisasi</a></li>
     <li class="breadcrumb-item active"><?= $jurusan['name']; ?></li>
     <!-- Breadcrumb Menu-->
@@ -181,12 +183,9 @@ $stmtNilaiAkhir->close();
             </div>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>
-<?php
-include "../../templates/footer.php";
-?>
+
+<?php include_once "../../templates/footer.php"; ?>

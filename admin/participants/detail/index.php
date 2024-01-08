@@ -1,11 +1,11 @@
 <?php
-include "../../../lib/koneksi.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
 
 $no_daftar = $_GET['no_pendaftaran'];
 
-$query = "SELECT p.email, p.nisn, p.name as nama_peserta, j.name as nama_jurusan, p.jenis_kelamin, p.tanggal_lahir, p.alamat, p.asal_sekolah, p.nilai_ujian_sekolah, p.nilai_akhir, j.quota FROM peserta p INNER JOIN jurusan j on p.id_jurusan = j.id where no_pendaftaran = '$no_daftar'";
+$query = "SELECT p.email, p.nisn, p.name as nama_peserta, j.name as nama_jurusan, p.jenis_kelamin, p.tanggal_lahir, p.alamat, p.asal_sekolah, p.nilai_ujian_sekolah, p.nilai_akhir, j.quota FROM peserta p INNER JOIN jurusan j on p.id_jurusan = j.id where no_pendaftaran = ?";
 $stmt = mysqli_prepare($mysqli, $query);
+$stmt->bind_param('s', $no_daftar);
 mysqli_stmt_execute($stmt);
 $tampilpeserta = mysqli_stmt_get_result($stmt);
 $peserta = mysqli_fetch_assoc($tampilpeserta);
@@ -16,12 +16,17 @@ $query = "SELECT no_pendaftaran, nilai_akhir, FIND_IN_SET( nilai_akhir, (
     FROM peserta )
     ) AS ranking
     FROM peserta
-    WHERE no_pendaftaran = '$no_daftar'";
+    WHERE no_pendaftaran = ?";
 $stmt = mysqli_prepare($mysqli, $query);
+$stmt->bind_param('s', $no_daftar);
 mysqli_stmt_execute($stmt);
 $tampilranking = mysqli_stmt_get_result($stmt);
 $ranking = mysqli_fetch_assoc($tampilranking);
 mysqli_stmt_close($stmt);
+
+$title = "Detail Peserta " . $peserta['nama_peserta'];
+
+include_once "../../templates/header.php";
 
 ?>
 <main class="main">
@@ -164,4 +169,4 @@ mysqli_stmt_close($stmt);
   </div>
 </main>
 
-<?php include "../../templates/footer.php"; ?>
+<?php include_once "../../templates/footer.php"; ?>

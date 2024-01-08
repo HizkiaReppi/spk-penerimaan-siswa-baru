@@ -1,8 +1,11 @@
 <?php
 
-include "../../../lib/koneksi.php";
-include "../../../lib/functions.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
+include_once "../../../lib/functions.php";
+
+$title = "Tambah Data Peserta";
+
+include_once "../../templates/header.php";
 
 $tampilJurusan = getAllJurusan($mysqli);
 
@@ -18,7 +21,7 @@ $tampilJurusan = getAllJurusan($mysqli);
   <div class="container-fluid">
     <div class="animated fadeIn">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <div class="card">
             <div class="card-header">Tambah Data Peserta</div>
             <form action="store.php" method="POST">
@@ -128,4 +131,4 @@ $tampilJurusan = getAllJurusan($mysqli);
   </div>
 </main>
 
-<?php include "../../templates/footer.php"; ?>
+<?php include_once "../../templates/footer.php"; ?>

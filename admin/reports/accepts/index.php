@@ -1,19 +1,24 @@
 <?php
-include "../../../lib/koneksi.php";
-include "../../templates/header.php";
+include_once "../../../lib/koneksi.php";
+
+$title = "Laporan";
+
+include_once "../../templates/header.php";
 
 $id_jurusan = $_GET['id_jurusan'];
-$session_admin = $_SESSION['admin'];
 ?>
 
 <main class="main">
   <!-- Breadcrumb-->
   <?php
-  $tampiljurusan = mysqli_query($mysqli, "SELECT * FROM jurusan WHERE id = '$id_jurusan'");
+  $stmt = mysqli_prepare($mysqli, "SELECT * FROM jurusan WHERE id = ?");
+  mysqli_stmt_bind_param($stmt, "s", $id_jurusan);
+  mysqli_stmt_execute($stmt);
+  $tampiljurusan = mysqli_stmt_get_result($stmt);
   $jurusan = mysqli_fetch_assoc($tampiljurusan);
   ?>
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN; ?>/dasboard">Home</a></li>
+    <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN; ?>/dasboard">Dashboard</a></li>
     <li class="breadcrumb-item"><a href="<?= BASE_URL_ADMIN; ?>/reports">Laporan</a></li>
     <li class="breadcrumb-item active"><?= $jurusan['name']; ?></li>
     <!-- Breadcrumb Menu-->
@@ -64,11 +69,9 @@ $session_admin = $_SESSION['admin'];
             </div>
           </div>
         </div>
-        <!-- /.col-->
       </div>
-      <!-- /.row-->
     </div>
   </div>
 </main>
 
-<?php include "../../templates/footer.php"; ?>
+<?php include_once "../../templates/footer.php"; ?>

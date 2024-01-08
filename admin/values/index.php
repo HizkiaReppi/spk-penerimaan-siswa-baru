@@ -1,10 +1,13 @@
 <?php
-include "../../lib/koneksi.php";
-include "../templates/header.php";
+include_once "../../lib/koneksi.php";
+
+$title = "Manajemen Nilai";
+
+include_once "../templates/header.php";
 
 $session_admin = $_SESSION['admin'];
 
-$stmt = $mysqli->prepare("SELECT p.no_pendaftaran, p.name as participant_name, j.name as major_name, C1, C2, C3, C4, C5 FROM peserta p INNER JOIN jurusan j ON p.id_jurusan=j.id JOIN nilai n ON p.no_pendaftaran = n.no_pendaftaran");
+$stmt = $mysqli->prepare("SELECT p.no_pendaftaran, p.name AS participant_name, j.name AS major_name, C1, C2, C3, C4, C5 FROM peserta p INNER JOIN jurusan j ON p.id_jurusan=j.id INNER JOIN nilai n ON p.no_pendaftaran = n.no_pendaftaran");
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -76,4 +79,4 @@ $tampilkriteria = $mysqli->query("SELECT * FROM kriteria");
   </div>
 </main>
 
-<?php include "../templates/footer.php"; ?>
+<?php include_once "../templates/footer.php"; ?>
