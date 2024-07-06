@@ -17,6 +17,8 @@ Proyek ini adalah Sistem Pendukung Keputusan untuk penerimaan siswa baru yang me
 
 - **PHP**: Aplikasi ini dibangun menggunakan PHP tanpa framework.
 - **CSS**: Menggunakan Bootstrap untuk mempercantik tampilan.
-- **htaccess**: Menggunakan htaccess untuk membuat URL menjadi rapi dan berdasarkan nama folder.
+- **htaccess**: Menggunakan htaccess untuk membuat URL menjadi rapi dan routing berdasarkan nama folder.
+
+**_Disclaimer: Data yang digunakan adalah data dummy_**
 
 Create With Love | Hizkia Reppi
